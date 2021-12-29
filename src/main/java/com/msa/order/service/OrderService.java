@@ -15,19 +15,20 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @Service
 public class OrderService {
+    private final int ORDER_PAGE_SIZE = 5;
     private final OrderRepository orderRepository;
 
     @Transactional(readOnly = true)
-    public Order findOrder(Long itemId) {
-        return orderRepository.findById(itemId)
+    public Order findOrder(Long orderId) {
+        return orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
     }
 
     @Transactional(readOnly = true)
-    public Page<Order> findPagingOrders(int offset, int limit) {
+    public Page<Order> findPagingOrders(int offset) {
         return orderRepository.findAll(PageRequest.of(
                 offset,
-                limit,
+                ORDER_PAGE_SIZE,
                 Sort.Direction.DESC, "id"));
     }
 
@@ -37,7 +38,7 @@ public class OrderService {
     }
 
     @Transactional
-    public void deleteProduct(Long orderId) {
+    public void deleteOrder(Long orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
         orderRepository.delete(order);
