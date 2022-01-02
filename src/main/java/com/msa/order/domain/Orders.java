@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Order extends BaseTimeEntity {
+public class Orders extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +36,7 @@ public class Order extends BaseTimeEntity {
     private int payment;
 
     @Builder
-    public Order(Long productId, String orderer, String passward, int discount, int payment) {
+    public Orders(Long productId, String orderer, String passward, int discount, int payment) {
         this.productId = productId;
         this.orderer = orderer;
         this.passward = passward;

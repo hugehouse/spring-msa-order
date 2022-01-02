@@ -1,6 +1,6 @@
 package com.msa.order.service;
 
-import com.msa.order.domain.Order;
+import com.msa.order.domain.Orders;
 import com.msa.order.dto.OrderAddRequestDto;
 import com.msa.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,13 +19,13 @@ public class OrderService {
     private final OrderRepository orderRepository;
 
     @Transactional(readOnly = true)
-    public Order findOrder(Long orderId) {
+    public Orders findOrder(Long orderId) {
         return orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
     }
 
     @Transactional(readOnly = true)
-    public Page<Order> findPagingOrders(int offset) {
+    public Page<Orders> findPagingOrders(int offset) {
         return orderRepository.findAll(PageRequest.of(
                 offset,
                 ORDER_PAGE_SIZE,
@@ -33,13 +33,13 @@ public class OrderService {
     }
 
     @Transactional
-    public Order addOrder(@Valid OrderAddRequestDto order) {
+    public Orders addOrder(@Valid OrderAddRequestDto order) {
         return orderRepository.save(order.toEntity());
     }
 
     @Transactional
     public void deleteOrder(Long orderId) {
-        Order order = orderRepository.findById(orderId)
+        Orders order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
         orderRepository.delete(order);
     }

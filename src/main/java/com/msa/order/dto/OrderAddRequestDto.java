@@ -1,6 +1,6 @@
 package com.msa.order.dto;
 
-import com.msa.order.domain.Order;
+import com.msa.order.domain.Orders;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,8 +28,8 @@ public class OrderAddRequestDto {
     @NotNull
     private int payment;
 
-    public Order toEntity() {
-        return Order.builder()
+    public Orders toEntity() {
+        return Orders.builder()
                 .productId(productId)
                 .orderer(orderer)
                 .passward(passward)
