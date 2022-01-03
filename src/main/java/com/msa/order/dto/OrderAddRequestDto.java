@@ -15,7 +15,7 @@ public class OrderAddRequestDto {
     private Long productId;
 
     @NotNull
-    @Size(max = 16)
+    @Size(min = 11, max = 11)
     private String orderer;
 
     @NotNull
