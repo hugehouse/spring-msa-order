@@ -24,12 +24,9 @@ public class Orders extends BaseTimeEntity {
     @Column(nullable = false, length = 11)
     private String orderer;
 
-    //주문자 비밀번호
-    @Column(nullable = false, length = 16)
-    private String passward;
-
-    //할인금액
-    private int discount;
+    //주문자,
+    @Column(nullable = false, length = 100)
+    private String address;
 
     //지불금액
     @Column(nullable = false)
@@ -40,11 +37,10 @@ public class Orders extends BaseTimeEntity {
     private int amount;
 
     @Builder
-    public Orders(Long productId, String orderer, String passward, int discount, int payment, int amount) {
+    public Orders(Long productId, String orderer, String address, int payment, int amount) {
         this.productId = productId;
         this.orderer = orderer;
-        this.passward = passward;
-        this.discount = discount;
+        this.address = address;
         this.payment = payment;
         this.amount = amount;
     }

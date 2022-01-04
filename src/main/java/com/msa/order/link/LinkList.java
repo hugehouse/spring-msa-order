@@ -1,7 +1,8 @@
 package com.msa.order.link;
 
 public enum LinkList {
-    productInfo("http://122.45.184.159:8081/products/purchase/{productId}?amount={amount}");
+    purchaseProduct("http://122.45.184.159:8081/products/purchase/{productId}?amount={amount}"),
+    productInfo("http://122.45.184.159:8081/products/{productId}");
 
     private String link;
 
