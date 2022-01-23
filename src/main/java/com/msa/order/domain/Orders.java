@@ -20,11 +20,11 @@ public class Orders extends BaseTimeEntity {
     @Column(nullable = false)
     private Long productId;
 
-    //주문자,
+    //주문자
     @Column(nullable = false, length = 11)
     private String orderer;
 
-    //주문자,
+    //주소
     @Column(nullable = false, length = 100)
     private String address;
 
