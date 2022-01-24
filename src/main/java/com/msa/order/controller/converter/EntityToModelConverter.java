@@ -2,6 +2,7 @@ package com.msa.order.controller.converter;
 
 import com.msa.order.controller.IndexController;
 import com.msa.order.domain.Orders;
+import com.msa.order.dto.OrderDetailResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -19,6 +20,11 @@ public class EntityToModelConverter {
     // create 이후 노출
     public EntityModel<Orders> toModel(Orders entity) {
         return getDetailEntityModel(entity, 0);
+    }
+
+    // order detail 페이지에서의 링크 표현
+    public EntityModel<OrderDetailResponseDto> toModel(OrderDetailResponseDto dto) {
+        return getDetailEntityModel(dto, 0);
     }
     
     // list 페이지에서의 링크 표현
@@ -53,6 +59,12 @@ public class EntityToModelConverter {
         return EntityModel.of(entity
                 , getDetailSelfLink(entity.getId())
                 , getPagingLink(entity.getOrderer(), offset, "list"));
+    }
+
+    private EntityModel<OrderDetailResponseDto> getDetailEntityModel(OrderDetailResponseDto dto, int offset) {
+        return EntityModel.of(dto
+                , getDetailSelfLink(dto.getOrders().getId())
+                , getPagingLink(dto.getOrders().getOrderer(), offset, "list"));
     }
 
     private Link getPagingLink(String orderer, int offset, String rel) {

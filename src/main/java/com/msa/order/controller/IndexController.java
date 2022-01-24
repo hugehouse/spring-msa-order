@@ -2,6 +2,8 @@ package com.msa.order.controller;
 
 import com.msa.order.controller.converter.EntityToModelConverter;
 import com.msa.order.domain.Orders;
+import com.msa.order.dto.OrderDetailResponseDto;
+import com.msa.order.dto.ProductInfoInOrderDto;
 import com.msa.order.service.OrderService;
 import com.msa.order.service.ProductRemoteService;
 import lombok.RequiredArgsConstructor;
@@ -32,9 +34,17 @@ public class IndexController {
     }
 
     @GetMapping("/orders/{id}")
-    public EntityModel<Orders> getOrder(@PathVariable Long id) {
-        return entityToModelConverter.toModel(orderService.findOrder(id));
+    public EntityModel<OrderDetailResponseDto> getOrder(@PathVariable Long id) {
+        ProductInfoInOrderDto dto = productRemoteService.getProductInfoInOrder(id);
+        return entityToModelConverter
+                .toModel(OrderDetailResponseDto
+                        .builder()
+                        .orders(orderService.findOrder(id))
+                        .productTitle(dto.getTitle())
+                        .build())
+                .add(dto.getLink());
     }
+
 
     @GetMapping("/orders/{orderer}/list")
     public CollectionModel<EntityModel<Orders>> getOrderList(@PathVariable String orderer, @RequestParam int offset) {
