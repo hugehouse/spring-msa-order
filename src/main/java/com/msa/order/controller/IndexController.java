@@ -36,8 +36,8 @@ public class IndexController {
         return entityToModelConverter.toModel(orderService.findOrder(id));
     }
 
-    @GetMapping("/orders/list")
-    public CollectionModel<EntityModel<Orders>> getOrderList(@RequestParam String orderer, @RequestParam int offset) {
+    @GetMapping("/orders/{orderer}/list")
+    public CollectionModel<EntityModel<Orders>> getOrderList(@PathVariable String orderer, @RequestParam int offset) {
         Page<Orders> pagedOrders = orderService.findPagingOrders(orderer, offset);
         List<EntityModel<Orders>> orders = pagedOrders.stream()
                 .map(entity -> entityToModelConverter.toModelWithPage(entity, offset)).collect(Collectors.toList());
