@@ -1,7 +1,8 @@
 package com.msa.order.handler;
 
 public enum ErrorResponse {
-    NotFoundContent(4001, "Not found content");
+    NotFoundContent(4001, "Not found content"),
+    InsertConstraintViolation(4002, "Violated constraint");
 
     private int code;
     private String description;

@@ -1,6 +1,5 @@
 package com.msa.order.handler;
 
-import com.msa.order.controller.IndexController;
 import com.msa.order.controller.converter.EntityToModelConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.EntityModel;
@@ -12,10 +11,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
 
 import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import java.util.Iterator;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RequiredArgsConstructor
 @RestControllerAdvice
@@ -35,6 +32,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(e.getStatusCode())
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(e.getResponseBodyAsString());
+    }
+
+    // Vaildation 에러 처리
+    @ExceptionHandler(value = ConstraintViolationException.class)
+    public ResponseEntity handleConstraintViolationException(ConstraintViolationException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorHolder(ErrorResponse.InsertConstraintViolation,
+                        getResultMessage(e.getConstraintViolations().iterator())));
     }
 
     private String getResultMessage(final Iterator<ConstraintViolation<?>> violationIterator) {
