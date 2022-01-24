@@ -4,31 +4,27 @@ import com.msa.order.domain.Orders;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Negative;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 @Getter
 @NoArgsConstructor
 public class OrderAddRequestDto {
 
-    @NotNull
+    @PositiveOrZero
     private Long productId;
 
-    @NotNull
+    @NotBlank
     @Size(min = 11, max = 11)
     private String orderer;
 
-    @NotNull
+    @NotBlank
     @Size(max = 100)
     private String address;
 
-    @NotNull
+    @PositiveOrZero
     private int payment;
 
-    @PositiveOrZero
-    @NotNull
+    @Min(value = 1)
     private int amount;
 
     public Orders toEntity() {
