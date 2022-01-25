@@ -1,8 +1,6 @@
 package com.msa.order.handler;
 
-import com.msa.order.controller.converter.EntityToModelConverter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,13 +15,12 @@ import java.util.Iterator;
 @RequiredArgsConstructor
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    private final EntityToModelConverter entityToModelConverter;
 
     // 존재하지 않는 페이지 접근
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<EntityModel<ErrorHolder>> handleIllegalArgumentException(IllegalArgumentException e) {
+    public ResponseEntity<ErrorHolder> handleIllegalArgumentException(IllegalArgumentException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(EntityModel.of(new ErrorHolder(ErrorResponse.NotFoundContent, e.getLocalizedMessage())));
+                .body(new ErrorHolder(ErrorResponse.NotFoundContent, e.getLocalizedMessage()));
     }
 
     // 다른 서비스로부터 받아온 정보 처리
