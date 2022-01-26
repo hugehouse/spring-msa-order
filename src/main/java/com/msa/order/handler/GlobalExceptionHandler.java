@@ -1,19 +1,18 @@
 package com.msa.order.handler;
 
+import com.msa.order.handler.message.ConstraintViolationMessageBuilder;
+import com.msa.order.handler.message.ExceptionResultMessageBuilder;
+import com.msa.order.handler.message.MethodArgumentNotValidMessageBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
 
-import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import java.util.Iterator;
 
 @RequiredArgsConstructor
 @RestControllerAdvice
@@ -34,65 +33,32 @@ public class GlobalExceptionHandler {
                 .body(e.getResponseBodyAsString());
     }
 
+    /*
+    Validation Exception 두 메소드에 Strategy 패턴 적용해서 출력 방식 통일했음
+    ExceptionMessageProvider 인터페이스로 확장한 두 클래스를 ConstraintViolationMessageBuilder에서 주입받아 사용
+     */
+
     // Service단에서의 Vaildation 에러 처리
     @ExceptionHandler(value = ConstraintViolationException.class)
     public ResponseEntity handleConstraintViolationException(ConstraintViolationException e) {
+
+        ExceptionResultMessageBuilder builder = new ExceptionResultMessageBuilder(
+                new ConstraintViolationMessageBuilder(e.getConstraintViolations().iterator()));
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorHolder(ErrorResponse.InsertConstraintViolation,
-                        getConstraintViolationResultMessage(e.getConstraintViolations().iterator())));
+                        builder.getResultMessage()));
     }
 
     // Controller단에서의 Validation 처리
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseEntity handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+
+        ExceptionResultMessageBuilder builder = new ExceptionResultMessageBuilder(
+                new MethodArgumentNotValidMessageBuilder(e.getAllErrors().iterator()));
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorHolder(ErrorResponse.InsertConstraintViolation,
-                        getMethodArgumentNotValidResultMessage(e.getAllErrors().iterator())));
-    }
-
-    // 중복 제거해야 함
-    private String getConstraintViolationResultMessage(Iterator<ConstraintViolation<?>> violationIterator) {
-        final StringBuilder resultMessageBuilder = new StringBuilder();
-        while (violationIterator.hasNext()) {
-            final ConstraintViolation<?> constraintViolation = violationIterator.next();
-            resultMessageBuilder
-                    .append("['")
-                    .append(getPopertyName(constraintViolation.getPropertyPath().toString())) // 유효성 검사가 실패한 속성
-                    .append("' is '")
-                    .append(constraintViolation.getInvalidValue()) // 유효하지 않은 값
-                    .append("'. ")
-                    .append(constraintViolation.getMessage()) // 유효성 검사 실패 시 메시지
-                    .append("]");
-
-            if (violationIterator.hasNext()) {
-                resultMessageBuilder.append(", ");
-            }
-        }
-        return resultMessageBuilder.toString();
-    }
-
-    private String getMethodArgumentNotValidResultMessage(Iterator<ObjectError> objectErrorIterator) {
-        final StringBuilder resultMessageBuilder = new StringBuilder();
-        while (objectErrorIterator.hasNext()) {
-            ObjectError objectError = objectErrorIterator.next();
-            FieldError error = (FieldError)objectError;
-            resultMessageBuilder
-                    .append("['")
-                    .append(getPopertyName(error.getField())) // 유효성 검사가 실패한 속성
-                    .append("' is '")
-                    .append(error.getRejectedValue()) // 유효하지 않은 값
-                    .append("'. ")
-                    .append(error.getDefaultMessage()) // 유효성 검사 실패 시 메시지
-                    .append("]");
-
-            if (objectErrorIterator.hasNext()) {
-                resultMessageBuilder.append(", ");
-            }
-        }
-        return resultMessageBuilder.toString();
-    }
-
-    private String getPopertyName(String propertyPath) {
-        return propertyPath.substring(propertyPath.lastIndexOf('.') + 1); // 전체 속성 경로에서 속성 이름만 가져온다.
+                        builder.getResultMessage()));
     }
 }
