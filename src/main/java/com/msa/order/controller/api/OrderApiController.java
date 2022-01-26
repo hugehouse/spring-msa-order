@@ -1,6 +1,5 @@
 package com.msa.order.controller.api;
 
-import com.msa.order.controller.IndexController;
 import com.msa.order.controller.converter.EntityToModelConverter;
 import com.msa.order.domain.Orders;
 import com.msa.order.dto.OrderAddRequestDto;
@@ -12,7 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+import javax.validation.Valid;
 
 @RequiredArgsConstructor
 @RequestMapping("/orders")
@@ -23,12 +22,14 @@ public class OrderApiController {
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<EntityModel<Orders>> addOrder(@RequestBody OrderAddRequestDto entity) {
-        // product에서 exception 발생 시 exception return됨
+    public ResponseEntity<EntityModel<Orders>> addOrder(@RequestBody @Valid OrderAddRequestDto entity) {
+        // product에서 exception 발생 시 exception 정보 return됨
         productRemoteService.purchaseProduct(entity.getProductId(), entity.getAmount());
+        Orders order = orderService.addOrder(entity);
+        // 여기 말고 service에서 순서 정해줘야 함. product transaction 순서 등
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(entityToModelConverter.toModel(orderService.addOrder(entity)));
+                .body(entityToModelConverter.toModel(order));
     }
 
     @DeleteMapping("/{id}")

@@ -15,9 +15,12 @@ public class ProductRemoteService {
         return restTemplate.getForObject(LinkList.productInfo.getLink(), String.class, productId);
     }
 
-    //가져오는데 생성자가 필요하다.????
+    // 가져오는데 생성자가 필요
     public ProductInfoInOrderDto getProductInfoInOrder(Long productId) {
-        return restTemplate.getForObject(LinkList.productInfoInOrder.getLink(), ProductInfoInOrderDto.class, productId);
+        return restTemplate.getForObject(
+                LinkList.productInfoInOrder.getLink()
+                , ProductInfoInOrderDto.class
+                , productId);
     }
 
     public void purchaseProduct(Long productId,int amount) {

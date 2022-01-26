@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
@@ -31,15 +34,24 @@ public class GlobalExceptionHandler {
                 .body(e.getResponseBodyAsString());
     }
 
-    // Vaildation 에러 처리
+    // Service단에서의 Vaildation 에러 처리
     @ExceptionHandler(value = ConstraintViolationException.class)
     public ResponseEntity handleConstraintViolationException(ConstraintViolationException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorHolder(ErrorResponse.InsertConstraintViolation,
-                        getResultMessage(e.getConstraintViolations().iterator())));
+                        getConstraintViolationResultMessage(e.getConstraintViolations().iterator())));
     }
 
-    private String getResultMessage(final Iterator<ConstraintViolation<?>> violationIterator) {
+    // Controller단에서의 Validation 처리
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    public ResponseEntity handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorHolder(ErrorResponse.InsertConstraintViolation,
+                        getMethodArgumentNotValidResultMessage(e.getAllErrors().iterator())));
+    }
+
+    // 중복 제거해야 함
+    private String getConstraintViolationResultMessage(Iterator<ConstraintViolation<?>> violationIterator) {
         final StringBuilder resultMessageBuilder = new StringBuilder();
         while (violationIterator.hasNext()) {
             final ConstraintViolation<?> constraintViolation = violationIterator.next();
@@ -56,7 +68,27 @@ public class GlobalExceptionHandler {
                 resultMessageBuilder.append(", ");
             }
         }
+        return resultMessageBuilder.toString();
+    }
 
+    private String getMethodArgumentNotValidResultMessage(Iterator<ObjectError> objectErrorIterator) {
+        final StringBuilder resultMessageBuilder = new StringBuilder();
+        while (objectErrorIterator.hasNext()) {
+            ObjectError objectError = objectErrorIterator.next();
+            FieldError error = (FieldError)objectError;
+            resultMessageBuilder
+                    .append("['")
+                    .append(getPopertyName(error.getField())) // 유효성 검사가 실패한 속성
+                    .append("' is '")
+                    .append(error.getRejectedValue()) // 유효하지 않은 값
+                    .append("'. ")
+                    .append(error.getDefaultMessage()) // 유효성 검사 실패 시 메시지
+                    .append("]");
+
+            if (objectErrorIterator.hasNext()) {
+                resultMessageBuilder.append(", ");
+            }
+        }
         return resultMessageBuilder.toString();
     }
 
