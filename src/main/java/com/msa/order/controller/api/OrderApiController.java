@@ -33,13 +33,12 @@ public class OrderApiController {
         }
         catch (Exception e) {
             // 개수 복구
-            productRemoteService.purchaseRollback(id, amount);
+            productRemoteService.purchaseRollBack(id, amount);
             return ResponseEntity
                     .status(HttpStatus.NOT_IMPLEMENTED)
                     .body(entityToModelConverter.toModelAddFailed(entity)
                             .add(productRemoteService.getProductInfoInOrder(entity.getProductId()).getLink()));
         }
-        // 여기 말고 service에서 순서 정해줘야 함. product transaction 순서 등
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(entityToModelConverter.toModel(order));

@@ -28,7 +28,7 @@ public class ProductRemoteService {
         restTemplate.put(LinkList.purchaseProduct.getLink(), ResponseEntity.class, productId, amount);
     }
 
-    public void purchaseRollback(Long productId,int amount) {
-        restTemplate.put(LinkList.purchaseRollback.getLink(), ResponseEntity.class, productId, amount);
+    public void purchaseRollBack(Long productId,int amount) {
+        restTemplate.put(LinkList.purchaseRollBack.getLink(), ResponseEntity.class, productId, amount);
     }
 }

@@ -1,7 +1,6 @@
 package com.msa.order.repository;
 
 import com.msa.order.domain.Orders;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
