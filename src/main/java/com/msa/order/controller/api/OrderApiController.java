@@ -22,10 +22,23 @@ public class OrderApiController {
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<EntityModel<Orders>> addOrder(@RequestBody @Valid OrderAddRequestDto entity) {
-        // product에서 exception 발생 시 exception 정보 return됨
-        productRemoteService.purchaseProduct(entity.getProductId(), entity.getAmount());
-        Orders order = orderService.addOrder(entity);
+    public ResponseEntity<EntityModel<?>> addOrder(@RequestBody @Valid OrderAddRequestDto entity) {
+        // product에서 exception 발생 시 exception 정보를 응답받음
+        Long id = entity.getProductId();
+        int amount = entity.getAmount();
+        productRemoteService.purchaseProduct(id, amount);
+        Orders order = null;
+        try {
+            order = orderService.addOrder(entity);
+        }
+        catch (Exception e) {
+            // 개수 복구
+            productRemoteService.purchaseRollback(id, amount);
+            return ResponseEntity
+                    .status(HttpStatus.NOT_IMPLEMENTED)
+                    .body(entityToModelConverter.toModelAddFailed(entity)
+                            .add(productRemoteService.getProductInfoInOrder(entity.getProductId()).getLink()));
+        }
         // 여기 말고 service에서 순서 정해줘야 함. product transaction 순서 등
         return ResponseEntity
                 .status(HttpStatus.CREATED)

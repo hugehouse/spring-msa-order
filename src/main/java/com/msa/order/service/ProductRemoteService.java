@@ -3,6 +3,7 @@ package com.msa.order.service;
 import com.msa.order.dto.ProductInfoInOrderDto;
 import com.msa.order.link.LinkList;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
@@ -24,6 +25,10 @@ public class ProductRemoteService {
     }
 
     public void purchaseProduct(Long productId,int amount) {
-        restTemplate.put(LinkList.purchaseProduct.getLink(), String.class, productId, amount);
+        restTemplate.put(LinkList.purchaseProduct.getLink(), ResponseEntity.class, productId, amount);
+    }
+
+    public void purchaseRollback(Long productId,int amount) {
+        restTemplate.put(LinkList.purchaseRollback.getLink(), ResponseEntity.class, productId, amount);
     }
 }

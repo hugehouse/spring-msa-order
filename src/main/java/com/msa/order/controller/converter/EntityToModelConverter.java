@@ -2,6 +2,7 @@ package com.msa.order.controller.converter;
 
 import com.msa.order.controller.IndexController;
 import com.msa.order.domain.Orders;
+import com.msa.order.dto.OrderAddRequestDto;
 import com.msa.order.dto.OrderDetailResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.hateoas.CollectionModel;
@@ -30,6 +31,11 @@ public class EntityToModelConverter {
     // list 페이지에서의 링크 표현
     public EntityModel<Orders> toModelWithPage(Orders entity, int offset) {
         return getDetailEntityModel(entity, offset);
+    }
+
+    // list 페이지에서의 링크 표현
+    public EntityModel<OrderAddRequestDto> toModelAddFailed(OrderAddRequestDto dto) {
+        return EntityModel.of(dto);
     }
 
     // delete 이후 노출

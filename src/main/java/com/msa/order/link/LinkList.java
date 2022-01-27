@@ -2,6 +2,7 @@ package com.msa.order.link;
 
 public enum LinkList {
     purchaseProduct("http://localhost:8081/products/purchase/{productId}?amount={amount}"),
+    purchaseRollback("http://localhost:8081/products/purchase/rollback/{productId}?amount={amount}"),
     productInfo("http://localhost:8081/products/{productId}"),
     productInfoInOrder("http://localhost:8081/products/orders/{productId}");
 
